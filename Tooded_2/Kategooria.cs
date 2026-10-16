@@ -10,7 +10,6 @@ namespace Tooded_2
     {
         public int Id { get; set; }
         public string? nimetus { get; set; }
-        public string? kirjeldus { get; set; }
         public ICollection<Toode> Tooded { get; set; }
     }
 }

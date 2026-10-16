@@ -29,9 +29,6 @@ namespace Tooded_2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("kirjeldus")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("nimetus")
                         .HasColumnType("nvarchar(max)");
 

@@ -28,287 +28,292 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.nimetus = new System.Windows.Forms.Label();
-            this.kogus = new System.Windows.Forms.Label();
-            this.hind = new System.Windows.Forms.Label();
-            this.kategooria = new System.Windows.Forms.Label();
-            this.toodeEntry = new System.Windows.Forms.TextBox();
-            this.kogusEntry = new System.Windows.Forms.TextBox();
-            this.hindEntry = new System.Windows.Forms.TextBox();
-            this.kategooriaBox = new System.Windows.Forms.ComboBox();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.lisaKategooriaBtn = new System.Windows.Forms.Button();
-            this.kustutaKategooriaBtn = new System.Windows.Forms.Button();
-            this.otsiFailBtn = new System.Windows.Forms.Button();
-            this.toodePilt = new System.Windows.Forms.PictureBox();
-            this.valinBtn = new System.Windows.Forms.Button();
-            this.ostanBtn = new System.Windows.Forms.Button();
-            this.saadaArveBtn = new System.Windows.Forms.Button();
-            this.lisaBtn = new System.Windows.Forms.Button();
-            this.kustutaBtn = new System.Windows.Forms.Button();
-            this.uuendaBtn = new System.Windows.Forms.Button();
-            this.puhastaBtn = new System.Windows.Forms.Button();
-            this.makstaBtn = new System.Windows.Forms.Button();
-            this.poodBtn = new System.Windows.Forms.Button();
-            this.poodEntry = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.toodePilt)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            nimetus = new Label();
+            kogus = new Label();
+            hind = new Label();
+            kategooria = new Label();
+            toodeEntry = new TextBox();
+            kogusEntry = new TextBox();
+            hindEntry = new TextBox();
+            kategooriaBox = new ComboBox();
+            imageList1 = new ImageList(components);
+            lisaKategooriaBtn = new Button();
+            kustutaKategooriaBtn = new Button();
+            otsiFailBtn = new Button();
+            toodePilt = new PictureBox();
+            lisaBtn = new Button();
+            kustutaBtn = new Button();
+            uuendaBtn = new Button();
+            puhastaBtn = new Button();
+            poodBtn = new Button();
+            ostuInfoLabel = new Label();
+            dataGridView1 = new DataGridView();
+            label1 = new Label();
+            kategooriaEntry = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)toodePilt).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            SuspendLayout();
             // 
             // nimetus
             // 
-            this.nimetus.AutoSize = true;
-            this.nimetus.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nimetus.Location = new System.Drawing.Point(39, 30);
-            this.nimetus.Name = "nimetus";
-            this.nimetus.Size = new System.Drawing.Size(111, 18);
-            this.nimetus.TabIndex = 0;
-            this.nimetus.Text = "Toode nimetus: ";
+            nimetus.AutoSize = true;
+            nimetus.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            nimetus.Location = new Point(46, 35);
+            nimetus.Margin = new Padding(4, 0, 4, 0);
+            nimetus.Name = "nimetus";
+            nimetus.Size = new Size(111, 18);
+            nimetus.TabIndex = 0;
+            nimetus.Text = "Toode nimetus: ";
             // 
             // kogus
             // 
-            this.kogus.AutoSize = true;
-            this.kogus.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kogus.Location = new System.Drawing.Point(39, 69);
-            this.kogus.Name = "kogus";
-            this.kogus.Size = new System.Drawing.Size(57, 18);
-            this.kogus.TabIndex = 1;
-            this.kogus.Text = "Kogus: ";
+            kogus.AutoSize = true;
+            kogus.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            kogus.Location = new Point(46, 80);
+            kogus.Margin = new Padding(4, 0, 4, 0);
+            kogus.Name = "kogus";
+            kogus.Size = new Size(57, 18);
+            kogus.TabIndex = 1;
+            kogus.Text = "Kogus: ";
             // 
             // hind
             // 
-            this.hind.AutoSize = true;
-            this.hind.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hind.Location = new System.Drawing.Point(39, 105);
-            this.hind.Name = "hind";
-            this.hind.Size = new System.Drawing.Size(52, 18);
-            this.hind.TabIndex = 2;
-            this.hind.Text = "Hind: ";
+            hind.AutoSize = true;
+            hind.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            hind.Location = new Point(46, 121);
+            hind.Margin = new Padding(4, 0, 4, 0);
+            hind.Name = "hind";
+            hind.Size = new Size(52, 18);
+            hind.TabIndex = 2;
+            hind.Text = "Hind: ";
             // 
             // kategooria
             // 
-            this.kategooria.AutoSize = true;
-            this.kategooria.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kategooria.Location = new System.Drawing.Point(42, 140);
-            this.kategooria.Name = "kategooria";
-            this.kategooria.Size = new System.Drawing.Size(94, 18);
-            this.kategooria.TabIndex = 3;
-            this.kategooria.Text = "Kategooriad: ";
+            kategooria.AutoSize = true;
+            kategooria.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            kategooria.Location = new Point(49, 162);
+            kategooria.Margin = new Padding(4, 0, 4, 0);
+            kategooria.Name = "kategooria";
+            kategooria.Size = new Size(94, 18);
+            kategooria.TabIndex = 3;
+            kategooria.Text = "Kategooriad: ";
             // 
             // toodeEntry
             // 
-            this.toodeEntry.Location = new System.Drawing.Point(167, 28);
-            this.toodeEntry.Name = "toodeEntry";
-            this.toodeEntry.Size = new System.Drawing.Size(100, 20);
-            this.toodeEntry.TabIndex = 4;
+            toodeEntry.Location = new Point(195, 32);
+            toodeEntry.Margin = new Padding(4, 3, 4, 3);
+            toodeEntry.Name = "toodeEntry";
+            toodeEntry.Size = new Size(116, 23);
+            toodeEntry.TabIndex = 4;
             // 
             // kogusEntry
             // 
-            this.kogusEntry.Location = new System.Drawing.Point(167, 66);
-            this.kogusEntry.Name = "kogusEntry";
-            this.kogusEntry.Size = new System.Drawing.Size(100, 20);
-            this.kogusEntry.TabIndex = 5;
+            kogusEntry.Location = new Point(195, 76);
+            kogusEntry.Margin = new Padding(4, 3, 4, 3);
+            kogusEntry.Name = "kogusEntry";
+            kogusEntry.Size = new Size(116, 23);
+            kogusEntry.TabIndex = 5;
             // 
             // hindEntry
             // 
-            this.hindEntry.Location = new System.Drawing.Point(167, 102);
-            this.hindEntry.Name = "hindEntry";
-            this.hindEntry.Size = new System.Drawing.Size(100, 20);
-            this.hindEntry.TabIndex = 6;
+            hindEntry.Location = new Point(195, 118);
+            hindEntry.Margin = new Padding(4, 3, 4, 3);
+            hindEntry.Name = "hindEntry";
+            hindEntry.Size = new Size(116, 23);
+            hindEntry.TabIndex = 6;
             // 
             // kategooriaBox
             // 
-            this.kategooriaBox.FormattingEnabled = true;
-            this.kategooriaBox.Location = new System.Drawing.Point(167, 136);
-            this.kategooriaBox.Name = "kategooriaBox";
-            this.kategooriaBox.Size = new System.Drawing.Size(121, 21);
-            this.kategooriaBox.TabIndex = 7;
+            kategooriaBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            kategooriaBox.FormattingEnabled = true;
+            kategooriaBox.Location = new Point(195, 157);
+            kategooriaBox.Margin = new Padding(4, 3, 4, 3);
+            kategooriaBox.Name = "kategooriaBox";
+            kategooriaBox.Size = new Size(140, 23);
+            kategooriaBox.TabIndex = 7;
             // 
             // imageList1
             // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            imageList1.ColorDepth = ColorDepth.Depth8Bit;
+            imageList1.ImageSize = new Size(16, 16);
+            imageList1.TransparentColor = Color.Transparent;
             // 
             // lisaKategooriaBtn
             // 
-            this.lisaKategooriaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lisaKategooriaBtn.Location = new System.Drawing.Point(120, 190);
-            this.lisaKategooriaBtn.Name = "lisaKategooriaBtn";
-            this.lisaKategooriaBtn.Size = new System.Drawing.Size(147, 23);
-            this.lisaKategooriaBtn.TabIndex = 8;
-            this.lisaKategooriaBtn.Text = "Lisa kategooriad";
-            this.lisaKategooriaBtn.UseVisualStyleBackColor = true;
+            lisaKategooriaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            lisaKategooriaBtn.Location = new Point(140, 219);
+            lisaKategooriaBtn.Margin = new Padding(4, 3, 4, 3);
+            lisaKategooriaBtn.Name = "lisaKategooriaBtn";
+            lisaKategooriaBtn.Size = new Size(172, 27);
+            lisaKategooriaBtn.TabIndex = 8;
+            lisaKategooriaBtn.Text = "Lisa kategooriad";
+            lisaKategooriaBtn.UseVisualStyleBackColor = true;
+            lisaKategooriaBtn.Click += btnLisaKategooria_Click;
             // 
             // kustutaKategooriaBtn
             // 
-            this.kustutaKategooriaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kustutaKategooriaBtn.Location = new System.Drawing.Point(273, 190);
-            this.kustutaKategooriaBtn.Name = "kustutaKategooriaBtn";
-            this.kustutaKategooriaBtn.Size = new System.Drawing.Size(147, 23);
-            this.kustutaKategooriaBtn.TabIndex = 9;
-            this.kustutaKategooriaBtn.Text = "Kustuta kategooriad";
-            this.kustutaKategooriaBtn.UseVisualStyleBackColor = true;
+            kustutaKategooriaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            kustutaKategooriaBtn.Location = new Point(318, 219);
+            kustutaKategooriaBtn.Margin = new Padding(4, 3, 4, 3);
+            kustutaKategooriaBtn.Name = "kustutaKategooriaBtn";
+            kustutaKategooriaBtn.Size = new Size(172, 27);
+            kustutaKategooriaBtn.TabIndex = 9;
+            kustutaKategooriaBtn.Text = "Kustuta kategooriad";
+            kustutaKategooriaBtn.UseVisualStyleBackColor = true;
+            kustutaKategooriaBtn.Click += btnKustutaKategooria_Click;
             // 
             // otsiFailBtn
             // 
-            this.otsiFailBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.otsiFailBtn.Location = new System.Drawing.Point(449, 202);
-            this.otsiFailBtn.Name = "otsiFailBtn";
-            this.otsiFailBtn.Size = new System.Drawing.Size(75, 23);
-            this.otsiFailBtn.TabIndex = 10;
-            this.otsiFailBtn.Text = "Otsi fail";
-            this.otsiFailBtn.UseVisualStyleBackColor = true;
+            otsiFailBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            otsiFailBtn.Location = new Point(524, 233);
+            otsiFailBtn.Margin = new Padding(4, 3, 4, 3);
+            otsiFailBtn.Name = "otsiFailBtn";
+            otsiFailBtn.Size = new Size(88, 27);
+            otsiFailBtn.TabIndex = 10;
+            otsiFailBtn.Text = "Otsi pilt";
+            otsiFailBtn.UseVisualStyleBackColor = true;
+            otsiFailBtn.Click += btnValiPilt_Click;
             // 
             // toodePilt
             // 
-            this.toodePilt.Location = new System.Drawing.Point(449, 28);
-            this.toodePilt.Name = "toodePilt";
-            this.toodePilt.Size = new System.Drawing.Size(288, 168);
-            this.toodePilt.TabIndex = 11;
-            this.toodePilt.TabStop = false;
-            // 
-            // valinBtn
-            // 
-            this.valinBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.valinBtn.Location = new System.Drawing.Point(566, 202);
-            this.valinBtn.Name = "valinBtn";
-            this.valinBtn.Size = new System.Drawing.Size(56, 23);
-            this.valinBtn.TabIndex = 12;
-            this.valinBtn.Text = "Valin";
-            this.valinBtn.UseVisualStyleBackColor = true;
-            // 
-            // ostanBtn
-            // 
-            this.ostanBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ostanBtn.Location = new System.Drawing.Point(628, 202);
-            this.ostanBtn.Name = "ostanBtn";
-            this.ostanBtn.Size = new System.Drawing.Size(58, 23);
-            this.ostanBtn.TabIndex = 13;
-            this.ostanBtn.Text = "Ostan";
-            this.ostanBtn.UseVisualStyleBackColor = true;
-            // 
-            // saadaArveBtn
-            // 
-            this.saadaArveBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.saadaArveBtn.Location = new System.Drawing.Point(692, 202);
-            this.saadaArveBtn.Name = "saadaArveBtn";
-            this.saadaArveBtn.Size = new System.Drawing.Size(85, 23);
-            this.saadaArveBtn.TabIndex = 14;
-            this.saadaArveBtn.Text = "Saada arve";
-            this.saadaArveBtn.UseVisualStyleBackColor = true;
+            toodePilt.Location = new Point(524, 32);
+            toodePilt.Margin = new Padding(4, 3, 4, 3);
+            toodePilt.Name = "toodePilt";
+            toodePilt.Size = new Size(336, 194);
+            toodePilt.TabIndex = 11;
+            toodePilt.TabStop = false;
             // 
             // lisaBtn
             // 
-            this.lisaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lisaBtn.Location = new System.Drawing.Point(120, 230);
-            this.lisaBtn.Name = "lisaBtn";
-            this.lisaBtn.Size = new System.Drawing.Size(53, 23);
-            this.lisaBtn.TabIndex = 15;
-            this.lisaBtn.Text = "Lisa";
-            this.lisaBtn.UseVisualStyleBackColor = true;
+            lisaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            lisaBtn.Location = new Point(140, 265);
+            lisaBtn.Margin = new Padding(4, 3, 4, 3);
+            lisaBtn.Name = "lisaBtn";
+            lisaBtn.Size = new Size(62, 27);
+            lisaBtn.TabIndex = 15;
+            lisaBtn.Text = "Lisa";
+            lisaBtn.UseVisualStyleBackColor = true;
+            lisaBtn.Click += btnLisa_Click;
             // 
             // kustutaBtn
             // 
-            this.kustutaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kustutaBtn.Location = new System.Drawing.Point(251, 230);
-            this.kustutaBtn.Name = "kustutaBtn";
-            this.kustutaBtn.Size = new System.Drawing.Size(75, 23);
-            this.kustutaBtn.TabIndex = 16;
-            this.kustutaBtn.Text = "Kustuta";
-            this.kustutaBtn.UseVisualStyleBackColor = true;
+            kustutaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            kustutaBtn.Location = new Point(293, 265);
+            kustutaBtn.Margin = new Padding(4, 3, 4, 3);
+            kustutaBtn.Name = "kustutaBtn";
+            kustutaBtn.Size = new Size(88, 27);
+            kustutaBtn.TabIndex = 16;
+            kustutaBtn.Text = "Kustuta";
+            kustutaBtn.UseVisualStyleBackColor = true;
+            kustutaBtn.Click += btnKustuta_Click;
             // 
             // uuendaBtn
             // 
-            this.uuendaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.uuendaBtn.Location = new System.Drawing.Point(179, 230);
-            this.uuendaBtn.Name = "uuendaBtn";
-            this.uuendaBtn.Size = new System.Drawing.Size(66, 23);
-            this.uuendaBtn.TabIndex = 17;
-            this.uuendaBtn.Text = "Uuenda";
-            this.uuendaBtn.UseVisualStyleBackColor = true;
+            uuendaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            uuendaBtn.Location = new Point(209, 265);
+            uuendaBtn.Margin = new Padding(4, 3, 4, 3);
+            uuendaBtn.Name = "uuendaBtn";
+            uuendaBtn.Size = new Size(77, 27);
+            uuendaBtn.TabIndex = 17;
+            uuendaBtn.Text = "Uuenda";
+            uuendaBtn.UseVisualStyleBackColor = true;
+            uuendaBtn.Click += btnUuenda_Click;
             // 
             // puhastaBtn
             // 
-            this.puhastaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.puhastaBtn.Location = new System.Drawing.Point(332, 230);
-            this.puhastaBtn.Name = "puhastaBtn";
-            this.puhastaBtn.Size = new System.Drawing.Size(75, 23);
-            this.puhastaBtn.TabIndex = 18;
-            this.puhastaBtn.Text = "Puhasta";
-            this.puhastaBtn.UseVisualStyleBackColor = true;
-            // 
-            // makstaBtn
-            // 
-            this.makstaBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.makstaBtn.Location = new System.Drawing.Point(450, 231);
-            this.makstaBtn.Name = "makstaBtn";
-            this.makstaBtn.Size = new System.Drawing.Size(75, 23);
-            this.makstaBtn.TabIndex = 19;
-            this.makstaBtn.Text = "Maksta";
-            this.makstaBtn.UseVisualStyleBackColor = true;
+            puhastaBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            puhastaBtn.Location = new Point(387, 265);
+            puhastaBtn.Margin = new Padding(4, 3, 4, 3);
+            puhastaBtn.Name = "puhastaBtn";
+            puhastaBtn.Size = new Size(88, 27);
+            puhastaBtn.TabIndex = 18;
+            puhastaBtn.Text = "Puhasta";
+            puhastaBtn.UseVisualStyleBackColor = true;
             // 
             // poodBtn
             // 
-            this.poodBtn.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.poodBtn.Location = new System.Drawing.Point(547, 231);
-            this.poodBtn.Name = "poodBtn";
-            this.poodBtn.Size = new System.Drawing.Size(75, 23);
-            this.poodBtn.TabIndex = 20;
-            this.poodBtn.Text = "Pood";
-            this.poodBtn.UseVisualStyleBackColor = true;
+            poodBtn.Font = new Font("Modern No. 20", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            poodBtn.Location = new Point(620, 233);
+            poodBtn.Margin = new Padding(4, 3, 4, 3);
+            poodBtn.Name = "poodBtn";
+            poodBtn.Size = new Size(88, 27);
+            poodBtn.TabIndex = 20;
+            poodBtn.Text = "Pood";
+            poodBtn.UseVisualStyleBackColor = true;
+            poodBtn.Click += poodBtn_Click;
             // 
-            // poodEntry
+            // ostuInfoLabel
             // 
-            this.poodEntry.Location = new System.Drawing.Point(628, 234);
-            this.poodEntry.Name = "poodEntry";
-            this.poodEntry.Size = new System.Drawing.Size(136, 20);
-            this.poodEntry.TabIndex = 21;
+            ostuInfoLabel.AutoEllipsis = true;
+            ostuInfoLabel.Font = new Font("Modern No. 20", 10F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            ostuInfoLabel.Location = new Point(714, 232);
+            ostuInfoLabel.Margin = new Padding(4, 0, 4, 0);
+            ostuInfoLabel.Name = "ostuInfoLabel";
+            ostuInfoLabel.Size = new Size(212, 64);
+            ostuInfoLabel.TabIndex = 21;
+            ostuInfoLabel.Text = "Ostetud: 0 tk\r\n—\r\nKokku: 0.00 €";
             // 
             // dataGridView1
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(120, 260);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(644, 186);
-            this.dataGridView1.TabIndex = 22;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(140, 300);
+            dataGridView1.Margin = new Padding(4, 3, 4, 3);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.Size = new Size(751, 215);
+            dataGridView1.TabIndex = 22;
+            dataGridView1.CellClick += dataGridViewTooted_CellClick;
             // 
-            // PeaVorm
+            // label1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.poodEntry);
-            this.Controls.Add(this.poodBtn);
-            this.Controls.Add(this.makstaBtn);
-            this.Controls.Add(this.puhastaBtn);
-            this.Controls.Add(this.uuendaBtn);
-            this.Controls.Add(this.kustutaBtn);
-            this.Controls.Add(this.lisaBtn);
-            this.Controls.Add(this.saadaArveBtn);
-            this.Controls.Add(this.ostanBtn);
-            this.Controls.Add(this.valinBtn);
-            this.Controls.Add(this.toodePilt);
-            this.Controls.Add(this.otsiFailBtn);
-            this.Controls.Add(this.kustutaKategooriaBtn);
-            this.Controls.Add(this.lisaKategooriaBtn);
-            this.Controls.Add(this.kategooriaBox);
-            this.Controls.Add(this.hindEntry);
-            this.Controls.Add(this.kogusEntry);
-            this.Controls.Add(this.toodeEntry);
-            this.Controls.Add(this.kategooria);
-            this.Controls.Add(this.hind);
-            this.Controls.Add(this.kogus);
-            this.Controls.Add(this.nimetus);
-            this.Name = "PeaVorm";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.toodePilt)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            label1.AutoSize = true;
+            label1.Font = new Font("Modern No. 20", 12F, FontStyle.Italic);
+            label1.Location = new Point(49, 198);
+            label1.Name = "label1";
+            label1.Size = new Size(112, 18);
+            label1.TabIndex = 23;
+            label1.Text = "Uus kategooria: ";
+            // 
+            // kategooriaEntry
+            // 
+            kategooriaEntry.Location = new Point(195, 193);
+            kategooriaEntry.Name = "kategooriaEntry";
+            kategooriaEntry.Size = new Size(100, 23);
+            kategooriaEntry.TabIndex = 24;
+            // 
+            // Form2
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(933, 519);
+            Controls.Add(kategooriaEntry);
+            Controls.Add(label1);
+            Controls.Add(dataGridView1);
+            Controls.Add(ostuInfoLabel);
+            Controls.Add(poodBtn);
+            Controls.Add(puhastaBtn);
+            Controls.Add(uuendaBtn);
+            Controls.Add(kustutaBtn);
+            Controls.Add(lisaBtn);
+            Controls.Add(toodePilt);
+            Controls.Add(otsiFailBtn);
+            Controls.Add(kustutaKategooriaBtn);
+            Controls.Add(lisaKategooriaBtn);
+            Controls.Add(kategooriaBox);
+            Controls.Add(hindEntry);
+            Controls.Add(kogusEntry);
+            Controls.Add(toodeEntry);
+            Controls.Add(kategooria);
+            Controls.Add(hind);
+            Controls.Add(kogus);
+            Controls.Add(nimetus);
+            Margin = new Padding(4, 3, 4, 3);
+            Name = "Form2";
+            Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)toodePilt).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -327,16 +332,14 @@
         private System.Windows.Forms.Button kustutaKategooriaBtn;
         private System.Windows.Forms.Button otsiFailBtn;
         private System.Windows.Forms.PictureBox toodePilt;
-        private System.Windows.Forms.Button valinBtn;
-        private System.Windows.Forms.Button ostanBtn;
-        private System.Windows.Forms.Button saadaArveBtn;
         private System.Windows.Forms.Button lisaBtn;
         private System.Windows.Forms.Button kustutaBtn;
         private System.Windows.Forms.Button uuendaBtn;
         private System.Windows.Forms.Button puhastaBtn;
-        private System.Windows.Forms.Button makstaBtn;
         private System.Windows.Forms.Button poodBtn;
-        private System.Windows.Forms.TextBox poodEntry;
+        private System.Windows.Forms.Label ostuInfoLabel;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private Label label1;
+        private TextBox kategooriaEntry;
     }
 }
