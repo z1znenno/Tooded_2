@@ -2,7 +2,7 @@
 
 namespace Tooded_2
 {
-    public partial class Form3 : Form
+    public partial class Pood : Form
     {
         // Funktsioon, mis otsib tooteid andmebaasist (antakse Form2-st)
         private readonly Func<string, List<PoodToode>> otsiTooted;
@@ -19,12 +19,33 @@ namespace Tooded_2
         /// <summary>Ostja e-post, kuhu tšekk saadetakse.</summary>
         public string Email => epostEntry.Text.Trim();
 
-        public Form3(Func<string, List<PoodToode>> otsiTooted)
+        public Pood(Func<string, List<PoodToode>> otsiTooted)
         {
             InitializeComponent();
             this.otsiTooted = otsiTooted;
             korvGrid.DataSource = korv;
+
+            rahakott = Session.Raha();
+            Text = $"Pood – {Session.Username}";
+
+            // Kasutaja e-post registreerimisest on vaikimisi tšeki saaja
+            using (var db = new AppDbContext())
+                epostEntry.Text = Session.LaeKasutaja(db)?.Email ?? "";
+
+            // Admin Panel nupp ainult administraatorile
+            Administrator.Visible = Session.IsAdmin;
+            Administrator.Click += Administrator_Click;
+
             UuendaKokku();
+        }
+
+        // Kasutaja raha (teenitud klikkermängus "Töö")
+        private readonly decimal rahakott;
+
+        private void Administrator_Click(object? sender, EventArgs e)
+        {
+            if (!Session.IsAdmin) return;
+            new AdminPanel().Show();
         }
 
         // ---------- Toodete laadimine ----------
@@ -132,7 +153,8 @@ namespace Tooded_2
 
         private void UuendaKokku()
         {
-            kokkuLabel.Text = $"Kokku: {Kokku:0.00} €";
+            kokkuLabel.Text = $"Kokku: {Kokku:0.00} €   (Sul on: {rahakott:0.00} €)";
+            kokkuLabel.ForeColor = Kokku > rahakott ? Color.Firebrick : SystemColors.ControlText;
             maksaBtn.Enabled = korv.Count > 0;
             eemaldaBtn.Enabled = korv.Count > 0;
         }
@@ -149,6 +171,13 @@ namespace Tooded_2
             if (korv.Count == 0)
             {
                 MessageBox.Show("Ostukorv on tühi.", "Pood");
+                return;
+            }
+
+            if (Kokku > rahakott)
+            {
+                MessageBox.Show($"Sul ei ole piisavalt raha.\nVaja: {Kokku:0.00} €, sul on: {rahakott:0.00} €.\nMine tööle ja teeni juurde!",
+                    "Pood", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

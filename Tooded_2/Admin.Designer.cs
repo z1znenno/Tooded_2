@@ -1,6 +1,6 @@
 ﻿namespace Tooded_2
 {
-    partial class Form2
+    partial class AdminPanel
     {
         /// <summary>
         /// Required designer variable.
@@ -125,7 +125,7 @@
             // 
             // kategooriaBox
             // 
-            kategooriaBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            kategooriaBox.DropDownStyle = ComboBoxStyle.DropDown;
             kategooriaBox.FormattingEnabled = true;
             kategooriaBox.Location = new Point(195, 157);
             kategooriaBox.Margin = new Padding(4, 3, 4, 3);

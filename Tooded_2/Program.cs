@@ -8,12 +8,27 @@ namespace Tooded_2
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            
-
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form2());
+
+            // Kui user.txt-s on salvestatud kasutaja, avame kohe Avavormi
+            bool sisseLogitud = false;
+            try
+            {
+                sisseLogitud = Session.TryLoad();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Andmebaasiga ei saa ühendust: " + ex.Message);
+            }
+
+            if (!sisseLogitud)
+            {
+                using var login = new Login();
+                if (login.ShowDialog() != DialogResult.OK)
+                    return; // kasutaja sulges sisselogimise akna
+            }
+
+            Application.Run(new Avavorm());
         }
     }
 }

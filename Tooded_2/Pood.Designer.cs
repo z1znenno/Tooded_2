@@ -1,6 +1,6 @@
 ﻿namespace Tooded_2
 {
-    partial class Form3
+    partial class Pood
     {
         private System.ComponentModel.IContainer components = null;
 
