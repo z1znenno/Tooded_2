@@ -27,18 +27,33 @@ namespace Tooded_2
             decimal ilmaKm = Math.Round(summa / (1 + KmMaar / 100m), 2);
             decimal km = summa - ilmaKm;
 
+            // Tšeki tekstid ostu hetkel valitud keeles
+            string regNr = Keel.T("Reg. nr", "Рег. №", "Reg. no.");
+            string tsekiNrSilt = Keel.T("Tšeki nr", "Чек №", "Receipt no.");
+            string kmProtsent = Keel.T("KM %", "НДС %", "VAT %");
+            string ilmaKmSilt = Keel.T("ilma KM-ta", "без НДС", "excl. VAT");
+            string kmSilt = Keel.T("KM", "НДС", "VAT");
+            string koosKmSilt = Keel.T("koos KM-ga", "с НДС", "incl. VAT");
+            string summaSilt = Keel.T("Summa:", "Сумма:", "Total:");
+            string makstudSilt = Keel.T("Makstud:", "Оплачено:", "Paid:");
+            string tooteidSilt = Keel.T("Tooteid kokku:", "Всего товаров:", "Total items:");
+            string tk = Keel.T("tk", "шт.", "pcs");
+            string aitah = Keel.T("Aitäh ostu eest!", "Спасибо за покупку!", "Thank you for your purchase!");
+            string klientSilt = Keel.T("Klient:", "Клиент:", "Customer:");
+
             var sb = new StringBuilder();
             sb.Append($@"
 <div style=""background:#f2f2f2;padding:20px 0;font-family:Arial,Helvetica,sans-serif;"">
 <table cellpadding=""0"" cellspacing=""0"" align=""center""
        style=""width:400px;background:#ffffff;border:1px solid #ddd;padding:20px;font-size:13px;color:#222;"">
   <tr><td colspan=""2"" style=""text-align:center;padding:10px 20px 4px;"">
-    <div style=""font-size:30px;font-weight:900;letter-spacing:2px;color:#2e7d32;"">{H(PoeNimi)}</div>
+    <div style=""font-size:30px;font-weight:900;letter-spacing:2px;color:#0e2240;"">{H(PoeNimi)}</div>
+    <div style=""height:4px;width:60px;background:#ff6600;margin:8px auto 0;border-radius:2px;""></div>
   </td></tr>
   <tr><td colspan=""2"" style=""text-align:center;font-size:11px;color:#555;padding:0 20px 14px;"">
-    {H(Ettevote)} Reg. nr {H(RegNr)} {H(Aadress)}
+    {H(Ettevote)} {H(regNr)} {H(RegNr)} {H(Aadress)}
   </td></tr>
-  <tr><td colspan=""2"" style=""padding:0 20px 12px;"">Tšeki nr {H(tsekiNr)}</td></tr>");
+  <tr><td colspan=""2"" style=""padding:0 20px 12px;"">{H(tsekiNrSilt)} {H(tsekiNr)}</td></tr>");
 
             // ---- Tooted ----
             foreach (var o in ostud)
@@ -47,9 +62,15 @@ namespace Tooded_2
                     ? $"<span style=\"color:#555;\">{o.Hind.ToString("0.00", Et)} × {o.Kogus}</span>&nbsp;&nbsp;"
                     : "";
 
+                // Internetipildi korral väike pisipilt nime ees (kohalikke faile e-kirjas näidata ei saa)
+                string pisipilt = PildiLaadija.OnUrl(o.Pilt)
+                    ? $"<img src=\"{H(o.Pilt!.Trim())}\" width=\"40\" height=\"40\" alt=\"\" " +
+                      "style=\"object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:8px;\">"
+                    : "";
+
                 sb.Append($@"
   <tr>
-    <td style=""padding:4px 0 4px 20px;"">{H(o.Nimetus)}</td>
+    <td style=""padding:4px 0 4px 20px;"">{pisipilt}{H(o.Nimetus)}</td>
     <td style=""padding:4px 20px 4px 0;text-align:right;white-space:nowrap;"">{detail}<b>{Raha(o.Summa)}</b></td>
   </tr>");
             }
@@ -60,8 +81,8 @@ namespace Tooded_2
   <tr><td colspan=""2"" style=""padding:0 20px;"">
     <table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""font-size:12px;"">
       <tr style=""color:#555;"">
-        <td>KM %</td><td style=""text-align:center;"">ilma KM-ta</td>
-        <td style=""text-align:center;"">KM</td><td style=""text-align:right;"">koos KM-ga</td>
+        <td>{H(kmProtsent)}</td><td style=""text-align:center;"">{H(ilmaKmSilt)}</td>
+        <td style=""text-align:center;"">{H(kmSilt)}</td><td style=""text-align:right;"">{H(koosKmSilt)}</td>
       </tr>
       <tr>
         <td style=""padding-top:6px;"">{KmMaar:0} %</td>
@@ -73,21 +94,21 @@ namespace Tooded_2
   </td></tr>
   <tr><td colspan=""2"" style=""padding:12px 20px;""><hr style=""border:0;border-top:1px solid #333;margin:0;""></td></tr>
 
-  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">KM:</td>
+  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">{H(kmSilt)}:</td>
       <td style=""padding:2px 20px 2px 0;text-align:right;""><b>{Raha(km)}</b></td></tr>
-  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">ilma KM-ta:</td>
+  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">{H(ilmaKmSilt)}:</td>
       <td style=""padding:2px 20px 2px 0;text-align:right;""><b>{Raha(ilmaKm)}</b></td></tr>
-  <tr><td style=""padding:10px 0 2px 20px;text-align:right;font-size:15px;""><b>Summa:</b></td>
+  <tr><td style=""padding:10px 0 2px 20px;text-align:right;font-size:15px;""><b>{H(summaSilt)}</b></td>
       <td style=""padding:10px 20px 2px 0;text-align:right;font-size:15px;""><b>{Raha(summa)}</b></td></tr>
-  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">Makstud:</td>
+  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">{H(makstudSilt)}</td>
       <td style=""padding:2px 20px 2px 0;text-align:right;""><b>{Raha(summa)}</b></td></tr>
-  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">Tooteid kokku:</td>
-      <td style=""padding:2px 20px 2px 0;text-align:right;""><b>{ostud.Sum(o => o.Kogus)} tk</b></td></tr>
+  <tr><td style=""padding:2px 0 2px 20px;text-align:right;"">{H(tooteidSilt)}</td>
+      <td style=""padding:2px 20px 2px 0;text-align:right;""><b>{ostud.Sum(o => o.Kogus)} {H(tk)}</b></td></tr>
 
   <tr><td colspan=""2"" style=""padding:16px 20px 4px;""><hr style=""border:0;border-top:1px dashed #999;margin:0;""></td></tr>
-  <tr><td colspan=""2"" style=""text-align:center;padding:8px 20px;"">Aitäh ostu eest!</td></tr>
+  <tr><td colspan=""2"" style=""text-align:center;padding:8px 20px;"">{H(aitah)}</td></tr>
   <tr>
-    <td style=""padding:8px 0 0 20px;font-size:11px;color:#555;"">Klient: {H(klient)}</td>
+    <td style=""padding:8px 0 0 20px;font-size:11px;color:#555;"">{H(klientSilt)} {H(klient)}</td>
     <td style=""padding:8px 20px 0 0;font-size:11px;color:#555;text-align:right;"">{aeg:dd.MM.yyyy HH:mm:ss}</td>
   </tr>
 </table>
