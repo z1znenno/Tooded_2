@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Text;
 
 namespace Tooded_2
@@ -12,7 +13,7 @@ namespace Tooded_2
         public const string SmtpServer = "smtp.gmail.com";
         public const int SmtpPort = 587;
 
-        // E-post, millelt tšekid saadetakse
+        // Poe postkast – ainus aadress, millelt tšekid ja arved saadetakse
         public static string SaatjaEmail = "order1print@gmail.com";
         public static string SaatjaNimi = TsekiKoostaja.PoeNimi;
 
@@ -45,25 +46,23 @@ namespace Tooded_2
 
         public static bool PoeEpostSeadistatud => !string.IsNullOrWhiteSpace(SaatjaParool);
 
-        public static Task SaadaAsync(string kellele, string teema, string html)
+        /// <summary>
+        /// Saadab kirja alati poe postkastist (SaatjaEmail). Kui <paramref name="manus"/> on antud,
+        /// lisatakse see kirjale PDF-manusena nimega <paramref name="manuseNimi"/>.
+        /// </summary>
+        public static async Task SaadaAsync(string kellele, string teema, string html,
+            byte[]? manus = null, string? manuseNimi = null)
         {
             if (!PoeEpostSeadistatud)
-                throw new InvalidOperationException(
-                    "Sinu kontol pole rakenduse parooli ja poe e-post pole seadistatud " +
-                    "(User Secrets: Smtp:Parool puudub).");
-            return SaadaAsync(kellele, teema, html, SaatjaEmail, SaatjaParool);
-        }
+                throw new InvalidOperationException(Keel.T(
+                    "Poe e-post pole seadistatud (User Secrets: Smtp:Parool puudub).",
+                    "Почта магазина не настроена (User Secrets: отсутствует Smtp:Parool).",
+                    "The shop's e-mail is not set up (User Secrets: Smtp:Parool is missing)."));
 
-        /// <summary>Saadab kirja kasutaja enda kontolt (tema e-post + rakenduse parool).</summary>
-        public static async Task SaadaAsync(string kellele, string teema, string html,
-            string saatjaEmail, string saatjaParool)
-        {
-            if (string.IsNullOrWhiteSpace(saatjaParool))
-                throw new InvalidOperationException("Rakenduse parool puudub.");
-
+            // MailMessage.Dispose vabastab ka manused ja nende vood
             using var kiri = new MailMessage
             {
-                From = new MailAddress(saatjaEmail, SaatjaNimi),
+                From = new MailAddress(SaatjaEmail, SaatjaNimi),
                 Subject = teema,
                 Body = html,
                 IsBodyHtml = true,
@@ -72,13 +71,31 @@ namespace Tooded_2
             };
             kiri.To.Add(kellele);
 
+            if (manus != null)
+            {
+                string nimi = string.IsNullOrWhiteSpace(manuseNimi) ? "arve.pdf" : manuseNimi.Trim();
+                var voog = new MemoryStream(manus, writable: false);
+                try
+                {
+                    kiri.Attachments.Add(new Attachment(voog, nimi, MediaTypeNames.Application.Pdf)
+                    {
+                        NameEncoding = Encoding.UTF8
+                    });
+                }
+                catch
+                {
+                    voog.Dispose(); // manust ei õnnestunud lisada – kiri seda voogu ei vabasta
+                    throw;
+                }
+            }
+
             using var smtp = new SmtpClient(SmtpServer, SmtpPort)
             {
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
                 // Gmail näitab rakenduse parooli tühikutega – need tuleb eemaldada
-                Credentials = new NetworkCredential(saatjaEmail, saatjaParool.Replace(" ", ""))
+                Credentials = new NetworkCredential(SaatjaEmail, SaatjaParool.Replace(" ", ""))
             };
 
             await smtp.SendMailAsync(kiri);

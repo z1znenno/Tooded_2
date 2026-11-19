@@ -14,11 +14,8 @@ namespace Tooded_2
         public string PasswordHash { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
 
-        // Kasutaja e-post: sellelt (ja sellele) saadetakse tšekid
+        // Kasutaja e-post: sellele saadetakse tšekid (saatja on poe postkast)
         public string Email { get; set; } = string.Empty;
-
-        // Gmaili rakenduse parool, krüpteeritud (vt ParooliKaitse). Võib olla tühi.
-        public string EpostiParool { get; set; } = string.Empty;
 
         // Kasutaja rahakott (teenitakse klikkermängus "Töö")
         [Column(TypeName = "numeric(12,2)")]

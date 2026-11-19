@@ -84,10 +84,6 @@ namespace Tooded_2.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EpostiParool")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
