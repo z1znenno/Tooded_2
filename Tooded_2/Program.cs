@@ -10,6 +10,18 @@ namespace Tooded_2
         {
             ApplicationConfiguration.Initialize();
 
+            // Algandmed (kategooriad ja tooted), kui andmebaasis neid veel pole
+            try
+            {
+                Seeder.Kaivita();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(Keel.T("Algandmete lisamine ebaõnnestus: ",
+                    "Не удалось добавить начальные данные: ",
+                    "Failed to add initial data: ") + (ex.InnerException?.Message ?? ex.Message));
+            }
+
             // Kui user.txt-s on salvestatud kasutaja, avame kohe Avavormi
             bool sisseLogitud = false;
             try
@@ -18,7 +30,9 @@ namespace Tooded_2
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Andmebaasiga ei saa ühendust: " + ex.Message);
+                MessageBox.Show(Keel.T("Andmebaasiga ei saa ühendust: ",
+                    "Не удалось подключиться к базе данных: ",
+                    "Cannot connect to the database: ") + ex.Message);
             }
 
             if (!sisseLogitud)
