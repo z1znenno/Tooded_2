@@ -24,14 +24,13 @@
             leitudLabel = new Label();
             korvLabel = new Label();
             korvGrid = new DataGridView();
-            eemaldaBtn = new Button();
+            eemaldaBtn = new TeemaNupp();
             kokkuLabel = new Label();
-            maksaBtn = new Button();
-            tuhistaBtn = new Button();
+            maksaBtn = new TeemaNupp();
+            tuhistaBtn = new TeemaNupp();
             epostLabel = new Label();
-            epostEntry = new TextBox();
             otsiTimer = new System.Windows.Forms.Timer(components);
-            Administrator = new Button();
+            Administrator = new TeemaNupp();
             ((System.ComponentModel.ISupportInitialize)korvGrid).BeginInit();
             SuspendLayout();
             // 
@@ -154,17 +153,8 @@
             epostLabel.Name = "epostLabel";
             epostLabel.Size = new Size(166, 18);
             epostLabel.TabIndex = 10;
-            epostLabel.Text = "Teie e-post (tšeki jaoks):";
-            // 
-            // epostEntry
-            // 
-            epostEntry.Font = new Font("Segoe UI", 10F);
-            epostEntry.Location = new Point(650, 448);
-            epostEntry.Name = "epostEntry";
-            epostEntry.PlaceholderText = "nimi@näide.ee";
-            epostEntry.Size = new Size(330, 25);
-            epostEntry.TabIndex = 11;
-            // 
+            epostLabel.Text = "Tšekk ja PDF-arve saadetakse teie e-postile";
+            //
             // otsiTimer
             // 
             otsiTimer.Interval = 300;
@@ -187,7 +177,6 @@
             CancelButton = tuhistaBtn;
             ClientSize = new Size(1000, 570);
             Controls.Add(Administrator);
-            Controls.Add(epostEntry);
             Controls.Add(epostLabel);
             Controls.Add(tuhistaBtn);
             Controls.Add(maksaBtn);
@@ -219,13 +208,12 @@
         private Label leitudLabel;
         private Label korvLabel;
         private DataGridView korvGrid;
-        private Button eemaldaBtn;
+        private TeemaNupp eemaldaBtn;
         private Label kokkuLabel;
-        private Button maksaBtn;
-        private Button tuhistaBtn;
+        private TeemaNupp maksaBtn;
+        private TeemaNupp tuhistaBtn;
         private Label epostLabel;
-        private TextBox epostEntry;
         private System.Windows.Forms.Timer otsiTimer;
-        private Button Administrator;
+        private TeemaNupp Administrator;
     }
 }

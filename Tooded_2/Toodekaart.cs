@@ -17,17 +17,24 @@ namespace Tooded_2
         private static readonly string[] KaustaNimed = { "Pildid", "Images", "Pictures", "Resources", "img" };
         private static readonly string[] Laiendid = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" };
 
-        private static readonly Color Aktsent = Color.FromArgb(46, 125, 50);
-        private static readonly Color Piirjoon = Color.FromArgb(222, 222, 222);
-        private static readonly Image Kohataide = LooKohataide();
+        private const int PildiLaius = 182, PildiKorgus = 150;
+        // Ühised kohatäited (iga keele jaoks oma) – neid ei vabastata kunagi (kasutavad kõik kaardid)
+        private static readonly Dictionary<(KeeleKood, bool), Image> kohataited = new();
+
+        /// <summary>Mis seisus kaardi pilt on (sellest sõltuvad kohatäide ja vihje tekst).</summary>
+        private enum PildiOlek { Olemas, Laadimine, Puudub, LaadimineEbaonnestus }
+
+        private PildiOlek pildiOlek;
+        private int saadaval;
 
         private readonly PictureBox pilt;
+        private readonly ToolTip vihje = new();
         private readonly Label nimiLabel;
         private readonly Label kategooriaLabel;
         private readonly Label hindLabel;
         private readonly Label laosLabel;
         private readonly NumericUpDown kogusNum;
-        private readonly Button lisaBtn;
+        private readonly TeemaNupp lisaBtn;
         private bool hover;
 
         public PoodToode Toode { get; }
@@ -38,102 +45,103 @@ namespace Tooded_2
         public ToodeKaart(PoodToode toode)
         {
             Toode = toode;
-            DoubleBuffered = true;
-            Size = new Size(180, 262);
-            Margin = new Padding(7);
+            SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
+                     ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
+            Size = new Size(206, 340);
+            Margin = new Padding(0, 0, 14, 14);
             BackColor = Color.White;
 
-            var laetud = LaePilt(toode.Pilt);
+            // Internetipilt: kui see on juba mälus, näitame kohe; muidu laeme taustal
+            bool onUrl = PildiLaadija.OnUrl(toode.Pilt);
+            Image? laetud = onUrl ? PildiLaadija.VotaMalust(toode.Pilt) : LaePilt(toode.Pilt);
+            bool laadiTaustal = onUrl && laetud == null;
+            pildiOlek = laetud != null ? PildiOlek.Olemas
+                : laadiTaustal ? PildiOlek.Laadimine
+                : PildiOlek.Puudub;
+
+            // Kui pilti pole, paneb RakendaKeel siia õiges keeles kohatäite
             pilt = new PictureBox
             {
-                Location = new Point(10, 10),
-                Size = new Size(160, 110),
+                Location = new Point(12, 12),
+                Size = new Size(PildiLaius, PildiKorgus),
                 SizeMode = PictureBoxSizeMode.Zoom,
-                BackColor = Color.FromArgb(245, 245, 245),
-                Image = laetud ?? Kohataide
+                BackColor = Color.White,
+                Image = laetud
             };
 
+            // Kaks rida nime jaoks, nagu kaup24 toodete loendis
             nimiLabel = new Label
             {
-                Location = new Point(10, 126),
-                Size = new Size(160, 22),
-                Font = new Font("Segoe UI", 10.5F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(33, 33, 33),
+                Location = new Point(12, 172),
+                Size = new Size(182, 40),
+                Font = new Font(Teema.FondiNimi, 10F),
+                ForeColor = Teema.Tekst,
                 AutoEllipsis = true,
                 Text = toode.Nimetus
             };
 
             kategooriaLabel = new Label
             {
-                Location = new Point(10, 148),
-                Size = new Size(160, 18),
-                Font = new Font("Segoe UI", 8.5F),
-                ForeColor = Color.Gray,
-                AutoEllipsis = true,
-                Text = string.IsNullOrWhiteSpace(toode.Kategooria) ? "Kategooriata" : toode.Kategooria
+                Location = new Point(12, 212),
+                Size = new Size(182, 18),
+                Font = Teema.Vaike,
+                ForeColor = Teema.TekstHall,
+                AutoEllipsis = true
             };
 
             hindLabel = new Label
             {
-                Location = new Point(10, 168),
-                Size = new Size(160, 28),
-                Font = new Font("Segoe UI", 14F, FontStyle.Bold),
-                ForeColor = Aktsent,
+                Location = new Point(10, 232),
+                Size = new Size(184, 34),
+                Font = new Font(Teema.FondiNimi, 18F, FontStyle.Bold),
+                ForeColor = Teema.Tekst,
                 Text = $"{toode.Hind:0.00} €"
             };
 
             laosLabel = new Label
             {
-                Location = new Point(10, 198),
-                Size = new Size(160, 18),
-                Font = new Font("Segoe UI", 8.5F)
+                Location = new Point(12, 266),
+                Size = new Size(182, 18),
+                Font = new Font(Teema.FondiNimi, 8.5F, FontStyle.Bold)
             };
 
             kogusNum = new NumericUpDown
             {
-                Location = new Point(10, 224),
-                Size = new Size(55, 25),
-                Font = new Font("Segoe UI", 9F),
+                Location = new Point(12, 297),
+                Size = new Size(52, 25),
+                Font = new Font(Teema.FondiNimi, 10F),
+                BorderStyle = BorderStyle.FixedSingle,
                 TextAlign = HorizontalAlignment.Center
             };
 
-            lisaBtn = new Button
+            lisaBtn = new TeemaNupp
             {
-                Location = new Point(72, 222),
-                Size = new Size(98, 28),
-                Text = "Lisa korvi",
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                FlatStyle = FlatStyle.Flat,
-                ForeColor = Color.White,
-                BackColor = Aktsent,
-                Cursor = Cursors.Hand
+                Location = new Point(70, 292),
+                Size = new Size(124, 36)
             };
-            lisaBtn.FlatAppearance.BorderSize = 0;
             lisaBtn.Click += (_, _) => LisaKorvi?.Invoke(this, (int)kogusNum.Value);
 
             Controls.AddRange(new Control[] { pilt, nimiLabel, kategooriaLabel, hindLabel, laosLabel, kogusNum, lisaBtn });
 
-            var vihje = new ToolTip();
             vihje.SetToolTip(nimiLabel, toode.Nimetus);
-
-            // Kui pilti ei leitud, näitab hiire all, mis väärtus andmebaasis on (aitab vigu leida)
-            if (laetud == null)
-            {
-                vihje.SetToolTip(pilt, string.IsNullOrWhiteSpace(toode.Pilt)
-                    ? "Andmebaasis pole pilti määratud"
-                    : $"Pilti ei leitud: \"{toode.Pilt}\"\nKäivituskaust: {Application.StartupPath}");
-            }
 
             SeoHover(this);
             foreach (Control c in Controls) SeoHover(c);
 
             SeaSaadaval(toode.Kogus);
+
+            // Tekstid praeguses keeles; uuenevad ise, kui keel vahetub
+            Keel.Jalgi(this, RakendaKeel);
+
+            if (laadiTaustal)
+                LaeUrlPilt(toode.Pilt!);
         }
 
         /// <summary>Uuendab, mitu tükki saab veel korvi lisada.</summary>
         public void SeaSaadaval(int saadaval)
         {
             saadaval = Math.Max(0, saadaval);
+            this.saadaval = saadaval;
 
             kogusNum.Minimum = 0;
             kogusNum.Maximum = saadaval;
@@ -143,14 +151,84 @@ namespace Tooded_2
             bool saab = saadaval > 0;
             kogusNum.Enabled = saab;
             lisaBtn.Enabled = saab;
-            lisaBtn.BackColor = saab ? Aktsent : Color.Silver;
 
-            if (Toode.Kogus <= 0) laosLabel.Text = "Otsas";
-            else if (saab) laosLabel.Text = $"Laos: {saadaval} tk";
-            else laosLabel.Text = "Kõik on juba korvis";
-
-            laosLabel.ForeColor = saab ? Color.DimGray : Color.Firebrick;
+            UuendaLaoSilt();
         }
+
+        // ---------- Keel ----------
+
+        /// <summary>Kaardi tekstid praeguses keeles (toote nimi ja kategooria tulevad andmebaasist ja jäävad samaks).</summary>
+        private void RakendaKeel()
+        {
+            kategooriaLabel.Text = string.IsNullOrWhiteSpace(Toode.Kategooria)
+                ? Keel.T("Kategooriata", "Без категории", "No category")
+                : Toode.Kategooria;
+            lisaBtn.Text = Keel.T("Lisa korvi", "В корзину", "Add to cart");
+            UuendaLaoSilt();
+            UuendaPildiTekstid();
+        }
+
+        private void UuendaLaoSilt()
+        {
+            bool saab = saadaval > 0;
+
+            if (Toode.Kogus <= 0)
+                laosLabel.Text = Keel.T("✕ Otsas", "✕ Нет в наличии", "✕ Out of stock");
+            else if (saab)
+                laosLabel.Text = Keel.T($"✓ Laos {saadaval} tk", $"✓ В наличии: {saadaval} шт.", $"✓ In stock: {saadaval} pcs");
+            else
+                laosLabel.Text = Keel.T("Kõik on juba korvis", "Всё уже в корзине", "All already in cart");
+
+            laosLabel.ForeColor = saab ? Teema.Edu : Teema.Viga;
+        }
+
+        /// <summary>Kohatäide ja vihje, kui pilti (veel) ei ole.</summary>
+        private void UuendaPildiTekstid()
+        {
+            switch (pildiOlek)
+            {
+                case PildiOlek.Laadimine:
+                    pilt.Image = Kohataide(true);
+                    vihje.SetToolTip(pilt, null);
+                    break;
+
+                // Kui pilti ei leitud, näitab hiire all, mis väärtus andmebaasis on (aitab vigu leida)
+                case PildiOlek.Puudub:
+                    pilt.Image = Kohataide(false);
+                    vihje.SetToolTip(pilt, string.IsNullOrWhiteSpace(Toode.Pilt)
+                        ? Keel.T("Andmebaasis pole pilti määratud",
+                                 "В базе данных изображение не указано",
+                                 "No image is set in the database")
+                        : Keel.T($"Pilti ei leitud: \"{Toode.Pilt}\"\nKäivituskaust: {Application.StartupPath}",
+                                 $"Изображение не найдено: \"{Toode.Pilt}\"\nПапка запуска: {Application.StartupPath}",
+                                 $"Image not found: \"{Toode.Pilt}\"\nStartup folder: {Application.StartupPath}"));
+                    break;
+
+                case PildiOlek.LaadimineEbaonnestus:
+                    pilt.Image = Kohataide(false);
+                    vihje.SetToolTip(pilt, Keel.T($"Pilti ei õnnestunud laadida:\n{Toode.Pilt}",
+                                                  $"Не удалось загрузить изображение:\n{Toode.Pilt}",
+                                                  $"Failed to load the image:\n{Toode.Pilt}"));
+                    break;
+            }
+        }
+
+        /// <summary>Ühine kohatäide praeguses keeles (luuakse esimesel kasutamisel).</summary>
+        private static Image Kohataide(bool laadimine)
+        {
+            var voti = (Keel.Praegune, laadimine);
+            if (!kohataited.TryGetValue(voti, out var kohataide))
+            {
+                kohataide = LooKohataide(laadimine
+                    ? Keel.T("Laadin pilti...", "Загрузка изображения...", "Loading image...")
+                    : Keel.T("Pilt puudub", "Нет изображения", "No image"));
+                kohataited[voti] = kohataide;
+            }
+            return kohataide;
+        }
+
+        private static bool OnKohataide(Image? kontrollitav) =>
+            kontrollitav != null && kohataited.ContainsValue(kontrollitav);
 
         // ---------- Välimus ----------
 
@@ -167,37 +245,88 @@ namespace Tooded_2
             Invalidate();
         }
 
+        // Valge ümar kaart; hiire all tumedam ääris ja oranž joon all (kaup24 "hover" efekt)
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.Clear(Teema.VanemaTaust(this));
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            using var tee = Teema.Umar(new RectangleF(0.5f, 0.5f, Width - 1.5f, Height - 1.5f), 10);
+            g.FillPath(Brushes.White, tee);
+            using var pliiats = new Pen(hover ? Teema.PiirTume : Teema.Piir, 1f);
+            g.DrawPath(pliiats, tee);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            if (!hover) return;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using var tee = Umar(new Rectangle(0, 0, Width - 1, Height - 1), 10);
-            using var pliiats = new Pen(hover ? Aktsent : Piirjoon, hover ? 2f : 1f);
-            e.Graphics.DrawPath(pliiats, tee);
+            using var joon = new Pen(Teema.Aktsent, 3f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            e.Graphics.DrawLine(joon, 14, 2, Width - 14, 2);
         }
 
-        protected override void OnSizeChanged(EventArgs e)
-        {
-            base.OnSizeChanged(e);
-            using var tee = Umar(new Rectangle(0, 0, Width, Height), 10);
-            var vana = Region;
-            Region = new Region(tee);
-            vana?.Dispose();
-        }
-
-        private static GraphicsPath Umar(Rectangle r, int raadius)
-        {
-            int d = raadius * 2;
-            var p = new GraphicsPath();
-            p.AddArc(r.X, r.Y, d, d, 180, 90);
-            p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-            p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-            p.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-            p.CloseFigure();
-            return p;
-        }
 
         // ---------- Pildid ----------
+
+        /// <summary>
+        /// Laeb pildi internetist taustal (vahemälu kaudu), et pood avaneks kohe.
+        /// await jätkab UI lõimel, seega võib pildi otse PictureBox-i panna.
+        /// </summary>
+        private async void LaeUrlPilt(string url)
+        {
+            Bitmap? bmp = null;
+            try
+            {
+                bmp = await PildiLaadija.LaeUrlistAsync(url);
+            }
+            catch
+            {
+                bmp = null;
+            }
+
+            // Kaart võis vahepeal sulgeda (nt uus otsing või aken suleti)
+            if (IsDisposed || Disposing || pilt.IsDisposed)
+            {
+                bmp?.Dispose();
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                // Igaks juhuks, kui jätkati teisel lõimel
+                try { BeginInvoke(() => SeaUrlPilt(bmp)); }
+                catch { bmp?.Dispose(); }
+                return;
+            }
+
+            SeaUrlPilt(bmp);
+        }
+
+        private void SeaUrlPilt(Bitmap? bmp)
+        {
+            if (IsDisposed || Disposing || pilt.IsDisposed)
+            {
+                bmp?.Dispose();
+                return;
+            }
+
+            var vana = pilt.Image;
+            if (bmp != null)
+            {
+                pildiOlek = PildiOlek.Olemas;
+                pilt.Image = bmp;
+                vihje.SetToolTip(pilt, null);
+            }
+            else
+            {
+                pildiOlek = PildiOlek.LaadimineEbaonnestus;
+                UuendaPildiTekstid();
+            }
+
+            if (vana != null && !OnKohataide(vana) && vana != bmp)
+                vana.Dispose();
+        }
 
         private static Image? LaePilt(string? fail)
         {
@@ -206,17 +335,8 @@ namespace Tooded_2
             string? tee = LeiaPildiFail(fail);
             if (tee == null) return null;
 
-            try
-            {
-                // Kopeerime pildi mällu, et fail ei jääks lukku
-                using var voog = File.OpenRead(tee);
-                using var algne = Image.FromStream(voog);
-                return new Bitmap(algne);
-            }
-            catch
-            {
-                return null;
-            }
+            // Kopeerime pildi mällu, et fail ei jääks lukku
+            return PildiLaadija.LaeFailist(tee);
         }
 
         /// <summary>Otsib pildifaili mitmest kohast ja tagastab esimese olemasoleva tee.</summary>
@@ -265,11 +385,11 @@ namespace Tooded_2
             return null;
         }
 
-        private static Image LooKohataide()
+        private static Image LooKohataide(string tekst)
         {
-            var bmp = new Bitmap(160, 110);
+            var bmp = new Bitmap(PildiLaius, PildiKorgus);
             using var g = Graphics.FromImage(bmp);
-            g.Clear(Color.FromArgb(245, 245, 245));
+            g.Clear(Teema.Taust);
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
             using var f = new Font("Segoe UI", 9F, FontStyle.Italic);
             using var pintsel = new SolidBrush(Color.Gray);
@@ -278,15 +398,21 @@ namespace Tooded_2
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center
             };
-            g.DrawString("Pilt puudub", f, pintsel, new RectangleF(0, 0, 160, 110), formaat);
+            g.DrawString(tekst, f, pintsel, new RectangleF(0, 0, PildiLaius, PildiKorgus), formaat);
             return bmp;
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && pilt.Image != null && pilt.Image != Kohataide)
+            if (disposing)
             {
-                pilt.Image.Dispose();
+                var vana = pilt.Image;
+                if (vana != null && !OnKohataide(vana))
+                {
+                    pilt.Image = null;
+                    vana.Dispose();
+                }
+                vihje.Dispose();
             }
             base.Dispose(disposing);
         }

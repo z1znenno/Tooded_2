@@ -10,67 +10,77 @@ namespace Tooded_2
         private readonly User _user;
 
         private readonly Label rahaLabel, infoLabel, plussLabel;
-        private readonly Button tooBtn, tooriistBtn, abilineBtn;
+        private readonly Label rahaPealkiri, taiendused;
+        private readonly Label? paisPealkiri;
+        private readonly Font tooFont, tooFontVaike;
+        private readonly TeemaNupp tooBtn, tooriistBtn, abilineBtn;
         private readonly System.Windows.Forms.Timer abiTimer, salvestaTimer, plussTimer;
 
         private bool muudetud;
 
-        private static readonly Font font = new("Segoe Script", 9F, FontStyle.Bold);
 
         public Too()
         {
             _user = Session.LaeKasutaja(_context)
-                    ?? throw new InvalidOperationException("Kasutajat ei leitud.");
+                    ?? throw new InvalidOperationException(
+                        Keel.T("Kasutajat ei leitud.", "Пользователь не найден.", "User not found."));
 
-            Text = "Töö – teeni raha";
-            ClientSize = new Size(420, 430);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
-            MaximizeBox = false;
+            // Aken on laiem, kui eestikeelsed tekstid nõuaksid: vene ja inglise tekstid on pikemad
+            Teema.Vorm(this, new Size(560, 550));
             StartPosition = FormStartPosition.CenterParent;
-            Font = font;
-            BackColor = Color.FromArgb(245, 248, 240);
+
+            // ---------- Päis: logo, pealkiri | keelevalik ----------
+            var pais = Teema.LooPais(this, "");
+            paisPealkiri = pais.Controls.OfType<Label>().FirstOrDefault();
+            var keeleValik = new KeeleValik();
+            keeleValik.Location = new Point(pais.Width - keeleValik.Width - 16, 16);
+            pais.Controls.Add(keeleValik);
+            Controls.Add(pais);
+
+            rahaPealkiri = Teema.Silt("", Teema.Tavaline, Teema.TekstHall);
+            rahaPealkiri.AutoSize = false;
+            rahaPealkiri.TextAlign = ContentAlignment.MiddleCenter;
+            rahaPealkiri.SetBounds(20, 74, 520, 22);
+            Controls.Add(rahaPealkiri);
 
             rahaLabel = new Label
             {
-                Font = new Font("Segoe UI", 22F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(46, 125, 50),
+                Font = new Font(Teema.FondiNimi, 24F, FontStyle.Bold),
+                ForeColor = Teema.Tekst,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(10, 15),
-                Size = new Size(400, 45)
+                Location = new Point(20, 96),
+                Size = new Size(520, 46)
             };
             Controls.Add(rahaLabel);
 
             infoLabel = new Label
             {
+                ForeColor = Teema.TekstHall,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(10, 60),
-                Size = new Size(400, 25)
+                Location = new Point(20, 142),
+                Size = new Size(520, 22)
             };
             Controls.Add(infoLabel);
 
-            tooBtn = new Button
+            // Ümmargune oranž nupp (raadius = pool laiusest, servad on sujuvad)
+            // Venekeelne tekst on pikem, selle jaoks on väiksem font
+            tooFont = new Font(Teema.FondiNimi, 20F, FontStyle.Bold);
+            tooFontVaike = new Font(Teema.FondiNimi, 17F, FontStyle.Bold);
+            tooBtn = new TeemaNupp
             {
-                Text = "TÖÖTA!",
-                Font = new Font("Segoe UI", 20F, FontStyle.Bold),
-                BackColor = Color.FromArgb(255, 193, 7),
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(180, 180),
-                Location = new Point(120, 95),
-                Cursor = Cursors.Hand
+                Font = tooFont,
+                Size = new Size(200, 200),
+                Raadius = 100,
+                Location = new Point(180, 174)
             };
-            tooBtn.FlatAppearance.BorderSize = 0;
-            // Ümmargune nupp
-            var ring = new System.Drawing.Drawing2D.GraphicsPath();
-            ring.AddEllipse(0, 0, tooBtn.Width, tooBtn.Height);
-            tooBtn.Region = new Region(ring);
             tooBtn.Click += TooBtn_Click;
             Controls.Add(tooBtn);
 
             // "+0.10 €" tekst, mis klikil korraks ilmub
             plussLabel = new Label
             {
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(46, 125, 50),
+                Font = new Font(Teema.FondiNimi, 12F, FontStyle.Bold),
+                ForeColor = Teema.Edu,
                 BackColor = Color.Transparent,
                 AutoSize = true,
                 Visible = false
@@ -78,11 +88,15 @@ namespace Tooded_2
             Controls.Add(plussLabel);
             plussLabel.BringToFront();
 
-            tooriistBtn = new Button { Font = font, Location = new Point(20, 295), Size = new Size(380, 50) };
+            taiendused = Teema.Silt("", Teema.Pealkiri);
+            taiendused.Location = new Point(18, 386);
+            Controls.Add(taiendused);
+
+            tooriistBtn = new TeemaNupp { Stiil = NupuStiil.Teine, Location = new Point(20, 422), Size = new Size(520, 52) };
             tooriistBtn.Click += TooriistBtn_Click;
             Controls.Add(tooriistBtn);
 
-            abilineBtn = new Button { Font = font, Location = new Point(20, 355), Size = new Size(380, 50) };
+            abilineBtn = new TeemaNupp { Stiil = NupuStiil.Teine, Location = new Point(20, 484), Size = new Size(520, 52) };
             abilineBtn.Click += AbilineBtn_Click;
             Controls.Add(abilineBtn);
 
@@ -110,7 +124,8 @@ namespace Tooded_2
                 Salvesta();
             };
 
-            UuendaUI();
+            // Tekstid valitud keeles (ja uuesti iga kord, kui keelt vahetatakse)
+            Keel.Jalgi(this, RakendaKeel);
         }
 
         // ---------- Arvutused ----------
@@ -158,15 +173,44 @@ namespace Tooded_2
 
         // ---------- UI ----------
 
+        /// <summary>Vormi staatilised tekstid praeguses keeles; olekust sõltuvad tekstid uuendab UuendaUI.</summary>
+        private void RakendaKeel()
+        {
+            Text = Keel.T("Töö – teeni raha", "Работа – зарабатывай деньги", "Work – earn money");
+            if (paisPealkiri != null)
+                paisPealkiri.Text = Keel.T("Töö", "Работа", "Work");
+
+            rahaPealkiri.Text = Keel.T("Sinu rahakott", "Твой кошелёк", "Your wallet");
+            taiendused.Text = Keel.T("Täiendused", "Улучшения", "Upgrades");
+
+            tooBtn.Font = Keel.Praegune == KeeleKood.Ru ? tooFontVaike : tooFont;
+            tooBtn.Text = Keel.T("TÖÖTA!", "РАБОТАЙ!", "WORK!");
+            tooBtn.Invalidate();
+
+            UuendaUI();
+        }
+
         private void UuendaUI()
         {
             rahaLabel.Text = $"{_user.Raha:0.00} €";
-            infoLabel.Text = $"Klikk: +{KlikiTulu:0.00} €   |   Abilised: +{_user.AbilisteArv * AbiliseTulu:0.00} €/s";
 
-            tooriistBtn.Text = $"🔨 Parem tööriist (tase {_user.TooriistaTase + 1})  –  {TooriistaHind:0.00} €";
+            decimal abiTulu = _user.AbilisteArv * AbiliseTulu;
+            infoLabel.Text = Keel.T(
+                $"Klikk: +{KlikiTulu:0.00} €   |   Abilised: +{abiTulu:0.00} €/s",
+                $"Клик: +{KlikiTulu:0.00} €   |   Помощники: +{abiTulu:0.00} €/с",
+                $"Click: +{KlikiTulu:0.00} €   |   Helpers: +{abiTulu:0.00} €/s");
+
+            int jargmineTase = _user.TooriistaTase + 1;
+            tooriistBtn.Text = Keel.T(
+                $"🔨 Parem tööriist (tase {jargmineTase})  –  {TooriistaHind:0.00} €",
+                $"🔨 Улучшить инструмент (уровень {jargmineTase})  –  {TooriistaHind:0.00} €",
+                $"🔨 Better tool (level {jargmineTase})  –  {TooriistaHind:0.00} €");
             tooriistBtn.Enabled = _user.Raha >= TooriistaHind;
 
-            abilineBtn.Text = $"👷 Palka abiline ({_user.AbilisteArv} tk)  –  {AbiliseHind:0.00} €";
+            abilineBtn.Text = Keel.T(
+                $"👷 Palka abiline ({_user.AbilisteArv} tk)  –  {AbiliseHind:0.00} €",
+                $"👷 Нанять помощника (нанято: {_user.AbilisteArv})  –  {AbiliseHind:0.00} €",
+                $"👷 Hire a helper ({_user.AbilisteArv} hired)  –  {AbiliseHind:0.00} €");
             abilineBtn.Enabled = _user.Raha >= AbiliseHind;
         }
 
@@ -204,8 +248,9 @@ namespace Tooded_2
             catch (Exception ex)
             {
                 salvestaTimer.Stop();
-                MessageBox.Show("Raha salvestamine ebaõnnestus: " + (ex.InnerException?.Message ?? ex.Message),
-                    "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Keel.T("Raha salvestamine ebaõnnestus: ", "Не удалось сохранить деньги: ", "Failed to save the money: ")
+                    + (ex.InnerException?.Message ?? ex.Message),
+                    Keel.T("Viga", "Ошибка", "Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -216,6 +261,8 @@ namespace Tooded_2
                 abiTimer.Dispose();
                 salvestaTimer.Dispose();
                 plussTimer.Dispose();
+                tooFont.Dispose();
+                tooFontVaike.Dispose();
                 _context.Dispose();
             }
             base.Dispose(disposing);
