@@ -686,10 +686,9 @@ namespace Tooded_2
             }
         }
 
-        private async void poodBtn_Click(object sender, EventArgs e)
+        private void poodBtn_Click(object sender, EventArgs e)
         {
             List<OstuRida> ostud;
-            string email;
             decimal kokku;
 
             using (var pood = new Pood(OtsiPoest))
@@ -699,35 +698,14 @@ namespace Tooded_2
                 kokku = pood.Kokku;
             }
 
-            // Tšekk ja arve saadetakse kasutaja registreeritud e-postile
-            try
-            {
-                using var db = new AppDbContext();
-                email = (Session.LaeKasutaja(db)?.Email ?? "").Trim();
-            }
-            catch
-            {
-                email = "";
-            }
+            // Sama ost mis pealehel: raha ja laoseis muudetakse ühe andmebaasi tehinguga
+            bool onnestus = OstuTehing.TeeOst(this, ostud, kokku, out string email);
 
-            // 1) Kontrollime laoseisu uuesti ja vähendame kogust andmebaasis
-            foreach (var o in ostud)
-            {
-                var toode = _context.Toodetabel.Find(o.ToodeId);
-                if (toode == null || toode.Kogus < o.Kogus)
-                {
-                    MessageBox.Show(Keel.T($"Toodet \"{o.Nimetus}\" pole laos piisavalt. Ost tühistati.",
-                            $"Товара \"{o.Nimetus}\" недостаточно на складе. Покупка отменена.",
-                            $"There is not enough of \"{o.Nimetus}\" in stock. The purchase was cancelled."),
-                        PoeAken());
-                    _context.ChangeTracker.Clear(); // tühistab salvestamata muudatused
-                    LaeTooted();
-                    return;
-                }
-                toode.Kogus -= o.Kogus;
-            }
-            _context.SaveChanges();
+            // Ost tehti eraldi andmebaasi ühendusega – selle akna jälgitud tooted on vananenud
+            _context.ChangeTracker.Clear();
             LaeTooted();
+
+            if (!onnestus) return;
 
             // Jätame ostu meelde, et silti saaks keele vahetumisel uuesti koostada
             viimaneOstTk = ostud.Sum(o => o.Kogus);
@@ -735,54 +713,8 @@ namespace Tooded_2
             viimaneOstKokku = kokku;
             NaitaOstuInfot();
 
-            // 2) Saadame ühe kirjaga HTML-tšeki (kirja sisu) ja PDF-arve (manus)
-            if (!EpostiSaatja.OnKorrektne(email))
-            {
-                // Kontol pole e-posti – poe aken juba ütles, et tšekki ei saadeta
-                MessageBox.Show(Keel.T("Ost õnnestus!", "Покупка прошла успешно!", "Purchase successful!"),
-                    PoeAken(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            DateTime aeg = DateTime.Now;
-            string tsekiNr = aeg.ToString("yyyyMMddHHmmss");
-            string klient = Session.Username ?? "";
-
-            try
-            {
-                poodBtn.Enabled = false;
-                Cursor = Cursors.WaitCursor;
-                string html = TsekiKoostaja.LooHtml(ostud, tsekiNr, aeg, klient);
-                string teema = Keel.T(
-                    $"{TsekiKoostaja.PoeNimi} – tšekk ja arve nr {tsekiNr}",
-                    $"{TsekiKoostaja.PoeNimi} – чек и счёт № {tsekiNr}",
-                    $"{TsekiKoostaja.PoeNimi} – receipt and invoice no. {tsekiNr}");
-
-                // PDF-i koostamine on arvutusmahukas – teeme seda taustal, et aken ei hanguks
-                byte[] pdf = await Task.Run(() => ArveKoostaja.LooPdf(ostud, tsekiNr, aeg, klient, email));
-                await EpostiSaatja.SaadaAsync(email, teema, html, pdf, $"arve_{tsekiNr}.pdf");
-
-                MessageBox.Show(Keel.T($"Ost õnnestus! Tšekk ja PDF-arve saadeti aadressile {email}.",
-                        $"Покупка прошла успешно! Чек и PDF-счёт отправлены на адрес {email}.",
-                        $"Purchase successful! The receipt and PDF invoice were sent to {email}."),
-                    PoeAken(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(Keel.T("Ost on tehtud, aga tšeki ja arve saatmine ebaõnnestus:\n",
-                        "Покупка совершена, но отправить чек и счёт не удалось:\n",
-                        "The purchase was made, but sending the receipt and invoice failed:\n") + ex.Message,
-                    PoeAken(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            finally
-            {
-                Cursor = Cursors.Default;
-                poodBtn.Enabled = true;
-            }
+            _ = OstuTehing.SaadaTsekk(this, ostud, email); // taustal, aken ei jää ootama
         }
-
-        // Poe teadete akna pealkiri praeguses keeles
-        private static string PoeAken() => Keel.T("Pood", "Магазин", "Shop");
 
         /// <summary>Otsib tooteid andmebaasist nime või kategooria järgi (SQL LIKE).</summary>
         private List<PoodToode> OtsiPoest(string otsing)

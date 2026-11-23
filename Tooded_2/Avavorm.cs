@@ -200,7 +200,9 @@ namespace Tooded_2
             using var pood = new Pood(OtsiPoest);
             if (pood.ShowDialog(this) != DialogResult.OK) return;
 
-            TeeOst(pood.Ostud, pood.Kokku);
+            var ostud = pood.Ostud;
+            if (OstuTehing.TeeOst(this, ostud, pood.Kokku, out string email))
+                _ = OstuTehing.SaadaTsekk(this, ostud, email); // taustal, aken ei jää ootama
             UuendaRaha();
         }
 
@@ -224,113 +226,6 @@ namespace Tooded_2
         {
             Session.Logout();
             Application.Restart();
-        }
-
-        // ---------- Ostu sooritamine ----------
-
-        // Teateakende pealkirjad
-        private static string PoeTiitel() => Keel.T("Pood", "Магазин", "Shop");
-        private static string EpostiTiitel() => Keel.T("E-post", "Эл. почта", "E-mail");
-
-        private void TeeOst(List<OstuRida> ostud, decimal kokku)
-        {
-            // Tšekk ja arve saadetakse kasutaja registreeritud e-postile
-            string email;
-            using var db = new AppDbContext();
-            using var tx = db.Database.BeginTransaction();
-            try
-            {
-                var kasutaja = Session.LaeKasutaja(db)
-                               ?? throw new InvalidOperationException(
-                                   Keel.T("Kasutajat ei leitud.", "Пользователь не найден.", "User not found."));
-                email = (kasutaja.Email ?? "").Trim();
-
-                if (kasutaja.Raha < kokku)
-                {
-                    MessageBox.Show(Keel.T("Sul ei ole piisavalt raha.", "У тебя недостаточно денег.", "You don't have enough money."),
-                        PoeTiitel());
-                    return;
-                }
-
-                // Vähendame laoseisu
-                foreach (var rida in ostud)
-                {
-                    var toode = db.Toodetabel.FirstOrDefault(t => t.Id == rida.ToodeId);
-                    if (toode == null || toode.Kogus < rida.Kogus)
-                    {
-                        MessageBox.Show(Keel.T(
-                            $"Toodet \"{rida.Nimetus}\" ei ole laos piisavalt.",
-                            $"Товара «{rida.Nimetus}» недостаточно на складе.",
-                            $"There is not enough of \"{rida.Nimetus}\" in stock."), PoeTiitel());
-                        return; // tehing tühistatakse automaatselt
-                    }
-                    toode.Kogus -= rida.Kogus;
-                }
-
-                kasutaja.Raha -= kokku;
-
-                db.SaveChanges();
-                tx.Commit();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(Keel.T("Ost ebaõnnestus: ", "Покупка не удалась: ", "Purchase failed: ")
-                    + (ex.InnerException?.Message ?? ex.Message),
-                    Keel.T("Viga", "Ошибка", "Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            MessageBox.Show(Keel.T(
-                    $"Ost õnnestus! Makstud {kokku:0.00} €.",
-                    $"Покупка прошла успешно! Оплачено {kokku:0.00} €.",
-                    $"Purchase successful! Paid {kokku:0.00} €."), PoeTiitel(),
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            _ = SaadaTsekk(ostud, email);
-        }
-
-        /// <summary>
-        /// Saadab ühe kirjaga HTML-tšeki (kirja sisu) ja PDF-arve (manus) poe postkastist.
-        /// Ost on selleks ajaks juba kinnitatud – saatmise viga ostu ei tühista.
-        /// </summary>
-        private async Task SaadaTsekk(List<OstuRida> ostud, string email)
-        {
-            // Aadressi pole või see on vigane – poe aken juba ütles, et tšekki ei saadeta
-            if (!EpostiSaatja.OnKorrektne(email)) return;
-
-            try
-            {
-                var aeg = DateTime.Now;
-                string tsekiNr = aeg.ToString("yyyyMMddHHmmss");
-                string klient = Session.Username ?? "";
-                string html = TsekiKoostaja.LooHtml(ostud, tsekiNr, aeg, klient);
-                string teema = Keel.T(
-                    $"{TsekiKoostaja.PoeNimi} – tšekk ja arve nr {tsekiNr}",
-                    $"{TsekiKoostaja.PoeNimi} – чек и счёт № {tsekiNr}",
-                    $"{TsekiKoostaja.PoeNimi} – receipt and invoice no. {tsekiNr}");
-
-                // PDF-i koostamine on arvutusmahukas – teeme seda taustal, et aken ei hanguks
-                byte[] pdf = await Task.Run(() => ArveKoostaja.LooPdf(ostud, tsekiNr, aeg, klient, email));
-
-                await EpostiSaatja.SaadaAsync(email, teema, html, pdf, $"arve_{tsekiNr}.pdf");
-
-                if (IsDisposed) return;
-                MessageBox.Show(Keel.T(
-                        $"Tšekk ja PDF-arve saadeti aadressile {email}.",
-                        $"Чек и PDF-счёт отправлены на адрес {email}.",
-                        $"The receipt and PDF invoice were sent to {email}."), EpostiTiitel(),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                if (IsDisposed) return;
-                MessageBox.Show(Keel.T(
-                        "Ost on tehtud, kuid tšeki ja arve saatmine ebaõnnestus: ",
-                        "Покупка совершена, но отправить чек и счёт не удалось: ",
-                        "The purchase is complete, but sending the receipt and invoice failed: ")
-                    + ex.Message, EpostiTiitel(),
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
         }
 
         // ---------- Toodete otsing poe jaoks ----------
