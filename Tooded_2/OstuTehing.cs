@@ -33,7 +33,7 @@ namespace Tooded_2
                 if (kasutaja.Raha < kokku)
                 {
                     MessageBox.Show(omanik,
-                        Keel.T("Sul ei ole piisavalt raha.", "У тебя недостаточно денег.", "You don't have enough money."),
+                        Keel.T("Teil ei ole piisavalt raha.", "У вас недостаточно денег.", "You don't have enough money."),
                         PoeTiitel(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
