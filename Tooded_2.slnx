@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Tooded_2/Tooded_2.csproj" />
+  <Project Path="Tooded_EFCore.Tests/Tooded_EFCore.Tests.csproj" Id="642ef901-2e80-45ec-a596-bd295588375f" />
 </Solution>

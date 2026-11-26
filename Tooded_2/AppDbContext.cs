@@ -4,7 +4,12 @@ namespace Tooded_2
 {
     public class AppDbContext : DbContext
     {
-        private const string SqlServerConnection = @"Server=HP-CZC2349HTM;Database=Tooded_2;Trusted_Connection=True;TrustServerCertificate=True;";
+        public AppDbContext() { }
+
+        // Testid annavad siia oma andmebaasi seadistuse
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        private const string SqlServerConnection = @"Server=HP-CZC2349HTM;Database=Tooded_3;Trusted_Connection=True;TrustServerCertificate=True;";
         private const string NpgsqlConnection = @"User ID=postgres;Password=5395;Host=localhost;Port=5432;Database=Tooded_DB;";
 
         public DbSet<Toode> Toodetabel { get; set; }
@@ -13,6 +18,8 @@ namespace Tooded_2
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (optionsBuilder.IsConfigured) return;
+
             optionsBuilder.UseSqlServer(SqlServerConnection);
         }
 
